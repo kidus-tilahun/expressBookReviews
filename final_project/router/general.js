@@ -3,6 +3,7 @@ let books = require("./booksdb.js");
 let isValid = require("./auth_users.js").isValid;
 let users = require("./auth_users.js").users;
 const public_users = express.Router();
+const axios = require("axios");
 
 public_users.post("/register", (req, res) => {
   const username = req.body.username;
@@ -143,5 +144,27 @@ public_users.get("/review/:isbn", function (req, res) {
     return res.status(404).json({ message: "Book not found with this ISBN" });
   }
 });
+
+async function getBooksByAuthorWithAxios(author) {
+  try {
+    const response = await axios.get(`http://localhost:5000/author/${author}`);
+    console.log("Books fetched via Axios:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Axios fetch error:", error.message);
+  }
+}
+
+// Simulated client function showing how to consume Task 11 (Get Books by ISBN) using Axios
+function getBooksByISBNWithAxios(isbn) {
+  axios
+    .get(`http://localhost:5000/isbn/${isbn}`)
+    .then((response) => {
+      console.log("Book details fetched via Axios:", response.data);
+    })
+    .catch((error) => {
+      console.error("Axios promise rejection error:", error.message);
+    });
+}
 
 module.exports.general = public_users;
